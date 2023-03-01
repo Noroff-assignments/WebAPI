@@ -10,22 +10,7 @@ namespace WebAPI.Models
         public DbSet<Character> Character { get; set; }
         public DbSet<Franchise> Franchise { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(GetConnectionString());
-        }
-
-        private static string GetConnectionString()
-        {
-            var builder = new SqlConnectionStringBuilder
-            {
-                DataSource = "localhost\\SQLEXPRESS",
-                InitialCatalog = "MovieAPI",
-                IntegratedSecurity = true,
-                TrustServerCertificate = true
-            };
-            return builder.ToString();
-        }
+        public MoviesDbContext(DbContextOptions options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
