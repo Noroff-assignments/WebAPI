@@ -14,5 +14,8 @@ namespace WebAPI.Models
         public string? Gender { get; set; }
         [Url]
         public string? PictureURL { get; set; }
+
+        // Navigation property
+        public ICollection<Movie>? Movies { get; set; }
     }
 }

@@ -19,5 +19,11 @@ namespace WebAPI.Models
         public string? PosterURL { get; set; }
         [Url]
         public string? TrailerURL { get; set; }
+
+        public virtual ICollection<Character>? Characters { get; set; }
+
+        // Navigation properties
+        public int FranchiseId { get; set; }
+        public Franchise? Franchise { get; set; }
     }
 }

@@ -12,5 +12,7 @@ namespace WebAPI.Models
         [MaxLength(400)]
         public string? Description { get; set; }
 
+        // Navigation properties
+        public virtual ICollection<Movie>? Movies { get; set; }
     }
 }
