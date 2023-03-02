@@ -63,6 +63,20 @@ namespace WebAPI.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFranchise(int id)
+        {
+            try
+            {
+                await _franchiseService.DeleteFranchise(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+
 
     }
 }
