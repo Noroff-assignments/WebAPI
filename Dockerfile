@@ -5,7 +5,7 @@ COPY *.csproj ./
 RUN dotnet restore
 
 # Copy everything else and build
-COPY bin/Release/net6.0 .
+COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
