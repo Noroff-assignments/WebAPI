@@ -21,18 +21,18 @@ namespace WebAPI.Controllers
         // GET: Franchises
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Franchise.ToListAsync());
+              return View(await _context.Franchises.ToListAsync());
         }
 
         // GET: Franchises/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Franchise == null)
+            if (id == null || _context.Franchises == null)
             {
                 return NotFound();
             }
 
-            var franchise = await _context.Franchise
+            var franchise = await _context.Franchises
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (franchise == null)
             {
@@ -67,12 +67,12 @@ namespace WebAPI.Controllers
         // GET: Franchises/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Franchise == null)
+            if (id == null || _context.Franchises == null)
             {
                 return NotFound();
             }
 
-            var franchise = await _context.Franchise.FindAsync(id);
+            var franchise = await _context.Franchises.FindAsync(id);
             if (franchise == null)
             {
                 return NotFound();
@@ -118,12 +118,12 @@ namespace WebAPI.Controllers
         // GET: Franchises/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Franchise == null)
+            if (id == null || _context.Franchises == null)
             {
                 return NotFound();
             }
 
-            var franchise = await _context.Franchise
+            var franchise = await _context.Franchises
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (franchise == null)
             {
@@ -138,14 +138,14 @@ namespace WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Franchise == null)
+            if (_context.Franchises == null)
             {
-                return Problem("Entity set 'MoviesDbContext.Franchise'  is null.");
+                return Problem("Entity set 'MoviesDbContext.Franchises'  is null.");
             }
-            var franchise = await _context.Franchise.FindAsync(id);
+            var franchise = await _context.Franchises.FindAsync(id);
             if (franchise != null)
             {
-                _context.Franchise.Remove(franchise);
+                _context.Franchises.Remove(franchise);
             }
             
             await _context.SaveChangesAsync();
@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
 
         private bool FranchiseExists(int id)
         {
-          return _context.Franchise.Any(e => e.Id == id);
+          return _context.Franchises.Any(e => e.Id == id);
         }
     }
 }

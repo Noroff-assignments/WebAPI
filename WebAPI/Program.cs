@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using WebAPI.Models;
@@ -26,7 +25,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "The Greatest Movie Franchise API",
+        Title = "The Greatest Movies Franchises API",
         Description = "All the greatest movie franchies with associated movies and characters.",
         Contact = new OpenApiContact
         {

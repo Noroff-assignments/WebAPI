@@ -178,7 +178,7 @@ namespace WebAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Character", b =>
+            modelBuilder.Entity("WebAPI.Models.Characters", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Character");
+                    b.ToTable("Characters");
 
                     b.HasData(
                         new
@@ -297,7 +297,7 @@ namespace WebAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Franchise", b =>
+            modelBuilder.Entity("WebAPI.Models.Franchises", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Franchise");
+                    b.ToTable("Franchises");
 
                     b.HasData(
                         new
@@ -339,7 +339,7 @@ namespace WebAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Movie", b =>
+            modelBuilder.Entity("WebAPI.Models.Movies", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -377,7 +377,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("FranchiseId");
 
-                    b.ToTable("Movie");
+                    b.ToTable("Movies");
 
                     b.HasData(
                         new
@@ -483,31 +483,31 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("CharacterMovie", b =>
                 {
-                    b.HasOne("WebAPI.Models.Character", null)
+                    b.HasOne("WebAPI.Models.Characters", null)
                         .WithMany()
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebAPI.Models.Movie", null)
+                    b.HasOne("WebAPI.Models.Movies", null)
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Movie", b =>
+            modelBuilder.Entity("WebAPI.Models.Movies", b =>
                 {
-                    b.HasOne("WebAPI.Models.Franchise", "Franchise")
+                    b.HasOne("WebAPI.Models.Franchises", "Franchises")
                         .WithMany("Movies")
                         .HasForeignKey("FranchiseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Franchise");
+                    b.Navigation("Franchises");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.Franchise", b =>
+            modelBuilder.Entity("WebAPI.Models.Franchises", b =>
                 {
                     b.Navigation("Movies");
                 });

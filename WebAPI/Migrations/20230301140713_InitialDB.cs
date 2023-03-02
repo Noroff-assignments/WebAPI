@@ -13,7 +13,7 @@ namespace WebAPI.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Character",
+                name: "Characters",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -29,7 +29,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Franchise",
+                name: "Franchises",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -43,7 +43,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Movie",
+                name: "Movies",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -62,7 +62,7 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_Movie_Franchise_FranchiseId",
                         column: x => x.FranchiseId,
-                        principalTable: "Franchise",
+                        principalTable: "Franchises",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -80,19 +80,19 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_CharacterMovie_Character_CharacterId",
                         column: x => x.CharacterId,
-                        principalTable: "Character",
+                        principalTable: "Characters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CharacterMovie_Movie_MovieId",
                         column: x => x.MovieId,
-                        principalTable: "Movie",
+                        principalTable: "Movies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Character",
+                table: "Characters",
                 columns: new[] { "Id", "Alias", "FullName", "Gender", "PictureURL" },
                 values: new object[,]
                 {
@@ -111,7 +111,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Franchise",
+                table: "Franchises",
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
@@ -121,7 +121,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Movie",
+                table: "Movies",
                 columns: new[] { "Id", "Director", "FranchiseId", "Genre", "PosterURL", "ReleaseYear", "Title", "TrailerURL" },
                 values: new object[,]
                 {
@@ -178,7 +178,7 @@ namespace WebAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movie_FranchiseId",
-                table: "Movie",
+                table: "Movies",
                 column: "FranchiseId");
         }
 
@@ -189,13 +189,13 @@ namespace WebAPI.Migrations
                 name: "CharacterMovie");
 
             migrationBuilder.DropTable(
-                name: "Character");
+                name: "Characters");
 
             migrationBuilder.DropTable(
-                name: "Movie");
+                name: "Movies");
 
             migrationBuilder.DropTable(
-                name: "Franchise");
+                name: "Franchises");
         }
     }
 }

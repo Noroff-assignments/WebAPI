@@ -21,18 +21,18 @@ namespace WebAPI.Controllers
         // GET: Characters
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Character.ToListAsync());
+              return View(await _context.Characters.ToListAsync());
         }
 
         // GET: Characters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Character == null)
+            if (id == null || _context.Characters == null)
             {
                 return NotFound();
             }
 
-            var character = await _context.Character
+            var character = await _context.Characters
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (character == null)
             {
@@ -67,12 +67,12 @@ namespace WebAPI.Controllers
         // GET: Characters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Character == null)
+            if (id == null || _context.Characters == null)
             {
                 return NotFound();
             }
 
-            var character = await _context.Character.FindAsync(id);
+            var character = await _context.Characters.FindAsync(id);
             if (character == null)
             {
                 return NotFound();
@@ -118,12 +118,12 @@ namespace WebAPI.Controllers
         // GET: Characters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Character == null)
+            if (id == null || _context.Characters == null)
             {
                 return NotFound();
             }
 
-            var character = await _context.Character
+            var character = await _context.Characters
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (character == null)
             {
@@ -138,14 +138,14 @@ namespace WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Character == null)
+            if (_context.Characters == null)
             {
-                return Problem("Entity set 'MoviesDbContext.Character'  is null.");
+                return Problem("Entity set 'MoviesDbContext.Characters'  is null.");
             }
-            var character = await _context.Character.FindAsync(id);
+            var character = await _context.Characters.FindAsync(id);
             if (character != null)
             {
-                _context.Character.Remove(character);
+                _context.Characters.Remove(character);
             }
             
             await _context.SaveChangesAsync();
@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
 
         private bool CharacterExists(int id)
         {
-          return _context.Character.Any(e => e.Id == id);
+          return _context.Characters.Any(e => e.Id == id);
         }
     }
 }
