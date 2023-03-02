@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using WebAPI.Models;
+using WebAPI.Services.FranchiseService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<MoviesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle .
 builder.Services.AddEndpointsApiExplorer();
 
@@ -38,6 +40,8 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.IncludeXmlComments(xmlPath);
 });
+
+builder.Services.AddTransient<IFranchiseService, FranchiseService>();
 
 var app = builder.Build();
 

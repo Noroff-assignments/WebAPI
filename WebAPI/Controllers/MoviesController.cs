@@ -21,19 +21,19 @@ namespace WebAPI.Controllers
         // GET: Movies
         public async Task<IActionResult> Index()
         {
-            var moviesDbContext = _context.Movie.Include(m => m.Franchise);
+            var moviesDbContext = _context.Movies.Include(m => m.Franchise);
             return View(await moviesDbContext.ToListAsync());
         }
 
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Movie == null)
+            if (id == null || _context.Movies == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await _context.Movies
                 .Include(m => m.Franchise)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
         // GET: Movies/Create
         public IActionResult Create()
         {
-            ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name");
+            ViewData["FranchiseId"] = new SelectList(_context.Franchises, "Id", "Name");
             return View();
         }
 
@@ -64,24 +64,24 @@ namespace WebAPI.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
+            ViewData["FranchiseId"] = new SelectList(_context.Franchises, "Id", "Name", movie.FranchiseId);
             return View(movie);
         }
 
         // GET: Movies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Movie == null)
+            if (id == null || _context.Movies == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = await _context.Movies.FindAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
-            ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
+            ViewData["FranchiseId"] = new SelectList(_context.Franchises, "Id", "Name", movie.FranchiseId);
             return View(movie);
         }
 
@@ -117,19 +117,19 @@ namespace WebAPI.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
+            ViewData["FranchiseId"] = new SelectList(_context.Franchises, "Id", "Name", movie.FranchiseId);
             return View(movie);
         }
 
         // GET: Movies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Movie == null)
+            if (id == null || _context.Movies == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movie
+            var movie = await _context.Movies
                 .Include(m => m.Franchise)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
@@ -145,14 +145,14 @@ namespace WebAPI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Movie == null)
+            if (_context.Movies == null)
             {
                 return Problem("Entity set 'MoviesDbContext.Movie'  is null.");
             }
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = await _context.Movies.FindAsync(id);
             if (movie != null)
             {
-                _context.Movie.Remove(movie);
+                _context.Movies.Remove(movie);
             }
             
             await _context.SaveChangesAsync();
@@ -161,7 +161,7 @@ namespace WebAPI.Controllers
 
         private bool MovieExists(int id)
         {
-          return _context.Movie.Any(e => e.Id == id);
+          return _context.Movies.Any(e => e.Id == id);
         }
     }
 }

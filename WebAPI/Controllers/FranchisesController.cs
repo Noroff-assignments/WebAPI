@@ -1,23 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Net.Mime;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
+using WebAPI.Models.DTOs.Franchises;
+using WebAPI.Services.FranchiseService;
 
 namespace WebAPI.Controllers
 {
-    public class FranchisesController : Controller
+    [Route("api/v1/[controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiController]
+    public class FranchisesController : ControllerBase
     {
-        private readonly MoviesDbContext _context;
+        private readonly IFranchiseService _franchiseService;
+        private readonly IMapper _mapper;
 
-        public FranchisesController(MoviesDbContext context)
+        public FranchisesController(IFranchiseService franchiseService, IMapper mapper)
         {
-            _context = context;
+            _franchiseService = franchiseService;
+            _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
+        {
+            return Ok(_mapper.Map<IEnumerable<FranchiseReadDTO>>(await _franchiseService.GetAllFranchises()));
+        }
+
+        /*
         // GET: Franchises
         public async Task<IActionResult> Index()
         {
@@ -155,6 +168,6 @@ namespace WebAPI.Controllers
         private bool FranchiseExists(int id)
         {
           return _context.Franchise.Any(e => e.Id == id);
-        }
+        } */
     }
 }

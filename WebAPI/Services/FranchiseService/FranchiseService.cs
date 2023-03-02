@@ -1,9 +1,23 @@
-﻿using WebAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using WebAPI.Models;
 
 namespace WebAPI.Services.FranchiseService
 {
     public class FranchiseService : IFranchiseService
     {
+
+        private readonly MoviesDbContext _context;
+
+        public FranchiseService(MoviesDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Franchise>> GetAllFranchises()
+        {
+            return await _context.Franchises.ToListAsync();
+        }
+
         public Task<Franchise> AddFranchise(Franchise franchise)
         {
             throw new NotImplementedException();
@@ -20,11 +34,6 @@ namespace WebAPI.Services.FranchiseService
         }
 
         public Task<IEnumerable<Movie>> GetAllFranchiseMovies(int franchiseId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Franchise>> GetAllFranchises()
         {
             throw new NotImplementedException();
         }
