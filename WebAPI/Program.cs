@@ -3,6 +3,9 @@ using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using WebAPI.Models;
+using WebAPI.Services.CharacterService;
+using WebAPI.Services.FranchiseService;
+using WebAPI.Services.MovieService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +30,8 @@ builder.Services.AddSwaggerGen(options =>
         Description = "All the greatest movie franchies with associated movies and characters.",
         Contact = new OpenApiContact
         {
-            Name = "Michael Piepgras Neergaard",
-            Url = new Uri("https://github.com/piepgras")
+            Name = "Rene 'Code Crusher' Marcker & Michael Piepgras Neergaard",
+            Url = new Uri("https://github.com/Noroff-assignments/WebAPI")
         },
         License = new OpenApiLicense
         {
@@ -38,6 +41,10 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.IncludeXmlComments(xmlPath);
 });
+
+builder.Services.AddTransient<IFranchiseService, FranchiseService>();
+builder.Services.AddTransient<IMovieService, MovieService>();
+builder.Services.AddTransient<ICharacterService, CharacterService>();
 
 var app = builder.Build();
 
