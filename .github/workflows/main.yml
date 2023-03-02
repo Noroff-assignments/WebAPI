@@ -21,4 +21,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/WebAPI:${{ github.sha }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/webapi:${{ github.sha }}
