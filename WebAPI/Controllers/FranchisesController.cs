@@ -1,10 +1,12 @@
 ﻿using System.Drawing.Drawing2D;
+using System.Net;
 using System.Net.Mime;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Exceptions;
 using WebAPI.Models;
+using WebAPI.Models.DTOs;
 using WebAPI.Models.DTOs.Franchises;
 using WebAPI.Services.FranchiseService;
 
@@ -75,6 +77,23 @@ namespace WebAPI.Controllers
                 return BadRequest(ex.Message);
             }
             return NoContent();
+        }
+
+        [HttpGet("{id}/movies")]
+        public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllFranchiseMovies(int id)
+        {
+            try
+            {
+                return Ok(
+                        _mapper.Map<List<MovieReadDTO>>(
+                            await _franchiseService.GetAllFranchiseMovies(id)
+                        )
+                    );
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 

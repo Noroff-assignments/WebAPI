@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WebAPI.Exceptions;
 using WebAPI.Models;
+using WebAPI.Models.DTOs;
+using WebAPI.Models.DTOs.Franchises;
 
 namespace WebAPI.Services.FranchiseService
 {
@@ -52,15 +55,31 @@ namespace WebAPI.Services.FranchiseService
             await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Character>> GetAllFranchiseCharacters(int franchiseId)
+        public async Task<IEnumerable<Movie>> GetAllFranchiseMovies(int id)
         {
-            throw new NotImplementedException();
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            var movies =  await _context.Movies.Where(m => m.FranchiseId == id).ToListAsync();
+            return movies;
         }
 
-        public Task<IEnumerable<Movie>> GetAllFranchiseMovies(int franchiseId)
+        public async Task<IEnumerable<Character>> GetAllFranchiseCharacters(int id)
         {
             throw new NotImplementedException();
+            /*var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            var movies = await _context.Movies.Where(m => m.FranchiseId == id).ToListAsync();
+            var character = await _context.Characters.Where(c => c.Id == movieid).ToListAsync();
+            return character;*/
         }
+
+
 
         public Task<Franchise> UpdateFranchise(Franchise franchise)
         {
