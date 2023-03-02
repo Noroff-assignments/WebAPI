@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebAPI.Exceptions;
 using WebAPI.Models;
 
 namespace WebAPI.Services.FranchiseService
@@ -13,9 +14,20 @@ namespace WebAPI.Services.FranchiseService
             _context = context;
         }
 
+
         public async Task<IEnumerable<Franchise>> GetAllFranchises()
         {
             return await _context.Franchises.ToListAsync();
+        }
+
+        public async Task<Franchise> GetFranchiseById(int id)
+        {
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            return franchise;
         }
 
         public async Task<Franchise> CreateFranchise(Franchise franchise)
@@ -26,9 +38,18 @@ namespace WebAPI.Services.FranchiseService
             return franchise;
         }
 
-        public Task DeleteFranchise(int id)
+
+
+        public async Task DeleteFranchise(int id)
         {
-            throw new NotImplementedException();
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+
+            _context.Franchises.Remove(franchise);
+            await _context.SaveChangesAsync();
         }
 
         public Task<IEnumerable<Character>> GetAllFranchiseCharacters(int franchiseId)
@@ -37,11 +58,6 @@ namespace WebAPI.Services.FranchiseService
         }
 
         public Task<IEnumerable<Movie>> GetAllFranchiseMovies(int franchiseId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Franchise> GetFranchiseById(int id)
         {
             throw new NotImplementedException();
         }

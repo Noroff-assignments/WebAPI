@@ -48,7 +48,6 @@ namespace WebAPI.Controllers
             }
         }
 
-
         [HttpPost]
         public async Task<ActionResult<Franchise>> CreateFranchise(FranchiseCreateDTO createFranchiseDto)
         {
@@ -63,5 +62,7 @@ namespace WebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }
