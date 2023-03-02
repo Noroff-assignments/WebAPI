@@ -6,7 +6,7 @@ namespace WebAPI.Services.FranchiseService
     {
         Task<IEnumerable<Franchise>> GetAllFranchises();
         Task<Franchise> GetFranchiseById(int id);
-        Task<Franchise> AddFranchise(Franchise franchise);
+        Task<Franchise> CreateFranchise(Franchise franchise);
         Task DeleteFranchise(int id);
         Task<Franchise> UpdateFranchise(Franchise franchise);
         Task UpdateFranchiseMovies(int id, List<int> moviesId);

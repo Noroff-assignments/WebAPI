@@ -18,9 +18,12 @@ namespace WebAPI.Services.FranchiseService
             return await _context.Franchises.ToListAsync();
         }
 
-        public Task<Franchise> AddFranchise(Franchise franchise)
+        public async Task<Franchise> CreateFranchise(Franchise franchise)
         {
-            throw new NotImplementedException();
+            if (franchise == null) throw new ArgumentNullException(nameof(franchise));
+            await _context.Franchises.AddAsync(franchise); 
+            await _context.SaveChangesAsync();
+            return franchise;
         }
 
         public Task DeleteFranchise(int id)
