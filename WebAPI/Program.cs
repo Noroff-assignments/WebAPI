@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<MoviesDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
     );
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle .
 builder.Services.AddEndpointsApiExplorer();
 
 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
