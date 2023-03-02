@@ -58,22 +58,69 @@ namespace WebAPI.Services.MovieService
 
         public async Task<IEnumerable<Movie>> GetAllMovies()
         {
-            return await _context.Movies.Include(x => x.Characters).ToListAsync();
+            try
+            {
+                return await _context.Movies.Include(x => x.Characters).ToListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
-        public Task<Movie> GetMovieById(int id)
+        public async Task<Movie> GetMovieById(int id)
         {
-            throw new NotImplementedException();
+
+            var movie = await _context.Movies.Include(x => x.Characters).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (movie == null)
+            {
+                throw new MovieNotFoundException(id);
+            }
+
+            return movie;
         }
 
-        public Task<Movie> UpdateMovie(Movie movie)
+        public async Task<Movie> UpdateMovie(Movie movie)
         {
-            throw new NotImplementedException();
+            var foundMovie = await _context.Movies.AnyAsync(x => x.Id == movie.Id);
+            if (!foundMovie)
+            {
+                throw new MovieNotFoundException(movie.Id);
+            }
+            _context.Entry(movie).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return movie;
         }
 
-        public Task UpdateMovieCharacters(int id, List<int> characters)
+        public async Task UpdateMovieCharacters(int id, List<int> charactersId)
         {
-            throw new NotImplementedException();
+            var foundMovie = await _context.Movies.AnyAsync(movie => movie.Id == id);
+            if (!foundMovie)
+            {
+                throw new MovieNotFoundException(id);
+            }
+
+            var movieToUpdateCharacters = await _context.Movies
+                .Include(m => m.Characters)
+                .Where(m => m.Id == id)
+                .FirstAsync();
+          
+            var characters = new List<Character>();
+
+            foreach (var Id in charactersId)
+            {
+                var character = await _context.Characters.FindAsync(id);
+                if (character == null)
+                    throw new KeyNotFoundException($"Couldn't find character with ID: {id}");
+                characters.Add(character);
+            }
+            movieToUpdateCharacters.Characters = characters;
+            _context.Entry(movieToUpdateCharacters).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

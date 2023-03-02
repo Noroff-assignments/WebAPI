@@ -8,6 +8,6 @@
         public string Gender { get; set; }
         public string PictureURL { get; set; }
 
-        public ICollection<Movie>? Movies { get; set; }
+        public List<string> Movies { get; set; }
     }
 }

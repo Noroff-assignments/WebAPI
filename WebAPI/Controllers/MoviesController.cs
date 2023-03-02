@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
+using WebAPI.Exceptions;
 using WebAPI.Models;
 using WebAPI.Models.DTOs;
 using WebAPI.Services.MovieService;
@@ -28,150 +29,84 @@ namespace WebAPI.Controllers
         {
             return Ok(_mapper.Map<IEnumerable<MovieReadDTO>>(await _service.GetAllMovies()));
         }
-        //// GET: Movies
-        //public async Task<IActionResult> Index()
-        //{
-        //    var moviesDbContext = _context.Movie.Include(m => m.Franchise);
-        //    return View(await moviesDbContext.ToListAsync());
-        //}
 
-        //// GET: Movies/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null || _context.Movie == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Movie>> GetMovie(int id)
+        {
+            try
+            {
+                return Ok(_mapper.Map<MovieReadDTO>(await _service.GetMovieById(id)));
+            }
+            catch (MovieNotFoundException ex)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Detail = ex.Message
+                });
+            }
+        }
 
-        //    var movie = await _context.Movie
-        //        .Include(m => m.Franchise)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (movie == null)
-        //    {
-        //        return NotFound();
-        //    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMovie(int id, MovieUpdateDTO movieDTO)
+        {
+            if (id != movieDTO.Id)
+            {
+                return BadRequest();
+            }
 
-        //    return View(movie);
-        //}
+            try
+            {
+                var movie = _mapper.Map<Movie>(movieDTO);
+                await _service.UpdateMovie(movie);
+            }
+            catch (MovieNotFoundException ex)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Detail = ex.Message
+                });
+            }
 
-        //// GET: Movies/Create
-        //public IActionResult Create()
-        //{
-        //    ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name");
-        //    return View();
-        //}
+            return NoContent();
+        }
 
-        //// POST: Movies/Create
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create([Bind("Id,Title,Genre,ReleaseYear,Director,PosterURL,TrailerURL,FranchiseId")] Movie movie)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(movie);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
-        //    return View(movie);
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMovie(int id)
+        {
+            try
+            {
+                await _service.DeleteMovie(id);
+            }
+            catch (MovieNotFoundException ex)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Detail = ex.Message
+                });
+            }
 
-        //// GET: Movies/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null || _context.Movie == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return NoContent();
+        }
 
-        //    var movie = await _context.Movie.FindAsync(id);
-        //    if (movie == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
-        //    return View(movie);
-        //}
+        [HttpPut("{id}/characters")]
+        public async Task<IActionResult> UpdateMovieCharacters(int id, List<int> characters)
+        {
+            try
+            {
+                await _service.UpdateMovieCharacters(id, characters);
+            }
+            catch (KeyNotFoundException)
+            {
+                return BadRequest("Invalid character.");
+            }
 
-        //// POST: Movies/Edit/5
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,ReleaseYear,Director,PosterURL,TrailerURL,FranchiseId")] Movie movie)
-        //{
-        //    if (id != movie.Id)
-        //    {
-        //        return NotFound();
-        //    }
+            return NoContent();
+        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(movie);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!MovieExists(movie.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["FranchiseId"] = new SelectList(_context.Franchise, "Id", "Name", movie.FranchiseId);
-        //    return View(movie);
-        //}
-
-        //// GET: Movies/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Movie == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var movie = await _context.Movie
-        //        .Include(m => m.Franchise)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (movie == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(movie);
-        //}
-
-        //// POST: Movies/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (_context.Movie == null)
-        //    {
-        //        return Problem("Entity set 'MoviesDbContext.Movie'  is null.");
-        //    }
-        //    var movie = await _context.Movie.FindAsync(id);
-        //    if (movie != null)
-        //    {
-        //        _context.Movie.Remove(movie);
-        //    }
-            
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
-
-        //private bool MovieExists(int id)
-        //{
-        //  return _context.Movie.Any(e => e.Id == id);
-        //}
+        [HttpGet("{id}/characters")]
+        public async Task<ActionResult<IEnumerable<Character>>> GetMovieCharacters(int id)
+        {
+            return Ok(_mapper.Map<IEnumerable<CharacterReadDTO>>(await _service.GetAllMovieCharacters(id)));
+        }
     }
 }

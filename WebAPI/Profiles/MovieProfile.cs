@@ -10,7 +10,7 @@ namespace WebAPI.Profiles
         {
             CreateMap<MovieCreateDTO, Movie>();
             CreateMap<Movie, MovieReadDTO>()
-                .ForMember(dto => dto.Characters, options =>
+                .ForMember(DTO => DTO.Characters, options =>
                 options.MapFrom(movieDomain => movieDomain.Characters.Select(character => $"api/v1/charachters/{character.Id}").ToList()));
             CreateMap<MovieUpdateDTO, Movie>();
         }
