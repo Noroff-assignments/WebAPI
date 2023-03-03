@@ -1,160 +1,129 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Exceptions;
 using WebAPI.Models;
+using WebAPI.Models.DTOs;
+using WebAPI.Services.CharacterService;
 
 namespace WebAPI.Controllers
 {
-    public class CharactersController : Controller
+    [Route("api/v1/[controller]")]
+    [ApiController]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    public class CharactersController : ControllerBase
     {
-        private readonly MoviesDbContext _context;
-
-        public CharactersController(MoviesDbContext context)
+        private readonly ICharacterService _service;
+        private readonly IMapper _mapper;
+        public CharactersController(ICharacterService service, IMapper mapper)
         {
-            _context = context;
+            _service = service;
+            _mapper = mapper;
         }
 
-        // GET: Characters
-        public async Task<IActionResult> Index()
+        /// <summary>
+        /// Returns all characters in the database.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Character>>> GetCharacters()
         {
-              return View(await _context.Characters.ToListAsync());
+            return Ok(_mapper.Map<IEnumerable<CharacterReadDTO>>(await _service.GetAllCharacters()));
         }
 
-        // GET: Characters/Details/5
-        public async Task<IActionResult> Details(int? id)
+        /// <summary>
+        /// Gets a specific character by ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Character>> GetCharacter(int id)
         {
-            if (id == null || _context.Characters == null)
+            try
             {
-                return NotFound();
+                return Ok(_mapper.Map<CharacterReadDTO>(await _service.GetCharacterById(id)));
             }
-
-            var character = await _context.Characters
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (character == null)
+            catch (CharacterNotFoundException ex)
             {
-                return NotFound();
-            }
-
-            return View(character);
-        }
-
-        // GET: Characters/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Characters/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FullName,Alias,Gender,PictureURL")] Character character)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(character);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(character);
-        }
-
-        // GET: Characters/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Characters == null)
-            {
-                return NotFound();
-            }
-
-            var character = await _context.Characters.FindAsync(id);
-            if (character == null)
-            {
-                return NotFound();
-            }
-            return View(character);
-        }
-
-        // POST: Characters/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Alias,Gender,PictureURL")] Character character)
-        {
-            if (id != character.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                return NotFound(new ProblemDetails
                 {
-                    _context.Update(character);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                    Detail = ex.Message
+                });
+            }
+        }
+
+        /// <summary>
+        /// Updates fields of a character specified by ID, with new object data values.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="characterDTO"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCharacter(int id, CharacterUpdateDTO characterDTO)
+        {
+            if (id != characterDTO.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var character = _mapper.Map<Character>(characterDTO);
+                await _service.UpdateCharacter(character);
+            }
+            catch (CharacterNotFoundException e)
+            {
+                return NotFound(new ProblemDetails
                 {
-                    if (!CharacterExists(character.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    Detail = e.Message
+                });
             }
-            return View(character);
+
+            return NoContent();
         }
 
-        // GET: Characters/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        /// <summary>
+        /// Creates character in the database.
+        /// </summary>
+        /// <param name="character
+        /// "></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<Character>> PostCharacter(CharacterUpdateDTO characterDto)
         {
-            if (id == null || _context.Characters == null)
-            {
-                return NotFound();
-            }
-
-            var character = await _context.Characters
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (character == null)
-            {
-                return NotFound();
-            }
-
-            return View(character);
+            var character = _mapper.Map<Character>(characterDto);
+            return CreatedAtAction("GetCharacter", new { id = character.Id }, await _service.AddCharacter(character));
         }
 
-        // POST: Characters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        /// <summary>
+        /// Deletes a character by ID.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCharacter(int id)
         {
-            if (_context.Characters == null)
+            try
             {
-                return Problem("Entity set 'MoviesDbContext.Characters'  is null.");
+                await _service.DeleteCharacter(id);
             }
-            var character = await _context.Characters.FindAsync(id);
-            if (character != null)
+            catch (CharacterNotFoundException ex)
             {
-                _context.Characters.Remove(character);
+                return NotFound(new ProblemDetails
+                {
+                    Detail = ex.Message
+                });
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool CharacterExists(int id)
-        {
-          return _context.Characters.Any(e => e.Id == id);
+            return NoContent();
         }
     }
 }
