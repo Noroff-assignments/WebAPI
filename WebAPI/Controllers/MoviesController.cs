@@ -23,13 +23,11 @@ namespace WebAPI.Controllers
     {
         #region Constructor & Fields
         private readonly IMovieService _service;
-        private readonly MoviesDbContext _context;
         private readonly IMapper _mapper;
 
         // Sets the service and mapper for this controller via constructor.
-        public MoviesController(IMovieService service, MoviesDbContext context, IMapper mapper)
+        public MoviesController(IMovieService service, IMapper mapper)
         {
-            _context = context;
             _service = service;
             _mapper = mapper;
         }
