@@ -11,7 +11,6 @@ namespace WebAPI.Services.FranchiseService
     {
 
         private readonly MoviesDbContext _context;
-        private readonly IMapper _mapper;
 
         public FranchiseService(MoviesDbContext context)
         {
@@ -42,8 +41,6 @@ namespace WebAPI.Services.FranchiseService
             return franchise;
         }
 
-
-
         public async Task DeleteFranchise(int id)
         {
             var franchise = await _context.Franchises.FindAsync(id);
@@ -56,13 +53,6 @@ namespace WebAPI.Services.FranchiseService
             await _context.SaveChangesAsync();
         }
 
-
-
-
-
-
-
-
         public async Task<IEnumerable<Movie>> GetAllFranchiseMovies(int id)
         {
             var franchiseExist = await _context.Franchises.FindAsync(id);
@@ -71,51 +61,57 @@ namespace WebAPI.Services.FranchiseService
             return franchise.Movies;
         }
 
-
-
-
-
-
         public async Task<IEnumerable<Character>> GetAllFranchiseCharacters(int id)
         {
-            if (id <= 0) throw new ArgumentException("Invalid franchise id");
-
             var franchise = await _context.Franchises
                 .Include(f => f.Movies)
-                .ThenInclude(m => m.Characters)
-                .SingleOrDefaultAsync(f => f.Id == id);
-            
+                .ThenInclude(f => f.Characters)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
             if (franchise == null) throw new FranchiseNotFoundException(id);
 
             var characters = franchise.Movies
-                .SelectMany(m => m.Characters);
+                .SelectMany(m => m.Characters)
+                .Distinct()
+                .ToList();
 
-            return characters.ToListAsync();
+            return characters;
         }
-
-
-
-
 
         public async Task<Franchise> UpdateFranchise(Franchise franchise)
         {
-            throw new NotImplementedException();
-            /*if (franchise == null) throw new ArgumentNullException(nameof(franchise));
-            if (!await _franchiseRepository.FranchiseExistsAsync(franchise.Id)) throw new FranchiseNotFoundException(franchise.Id);
-
-
+            var foundFranchise = await _context.Franchises.AnyAsync(x => x.Id == franchise.Id);
+            if (!foundFranchise) throw new MovieNotFoundException(franchise.Id);
             _context.Entry(franchise).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            return franchise;*/
+            return franchise;
         }
 
-
-
-
-        public Task UpdateFranchiseMovies(int id, List<int> moviesId)
+        public async Task UpdateFranchiseMovies(int id, List<int> moviesId)
         {
-            throw new NotImplementedException();
+            var foundFranchise = await _context.Franchises.AnyAsync(franchise => franchise.Id == id);
+            if (!foundFranchise)
+            {
+                throw new MovieNotFoundException(id);
+            }
+
+            var franchiseToUpdateMovies = await _context.Franchises
+                .Include(f => f.Movies)
+                .Where(f => f.Id == id)
+                .FirstAsync();
+
+            var movies = new List<Movie>();
+
+            foreach (var Id in moviesId)
+            {
+                var movie = await _context.Movies.FindAsync(Id);
+                if (movie == null)
+                    throw new KeyNotFoundException($"Couldn't find movie with ID: {Id}");
+                movies.Add(movie);
+            }
+            franchiseToUpdateMovies.Movies = movies;
+            _context.Entry(franchiseToUpdateMovies).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

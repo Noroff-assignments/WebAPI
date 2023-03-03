@@ -106,5 +106,45 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMovie(int id, FranchiseUpdateDTO franchiseDTO)
+        {
+            if (id != franchiseDTO.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var franchise = _mapper.Map<Franchise>(franchiseDTO);
+                await _franchiseService.UpdateFranchise(franchise);
+            }
+            catch (FranchiseNotFoundException ex)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Detail = ex.Message
+                });
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}/movies")]
+        public async Task<IActionResult> UpdateFranchiseMovies(int id, List<int> movies)
+        {
+            try
+            {
+                await _franchiseService.UpdateFranchiseMovies(id, movies);
+            }
+            catch (KeyNotFoundException)
+            {
+                return BadRequest("Invalid character.");
+            }
+
+            return NoContent();
+        }
+
+
     }
 }
