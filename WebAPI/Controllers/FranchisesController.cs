@@ -157,7 +157,7 @@ namespace WebAPI.Controllers
         /// <param name="franchiseDTO">An franchise info, Name and description.</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(int id, FranchiseUpdateDTO franchiseDTO)
+        public async Task<IActionResult> PutFranchise(int id, FranchiseUpdateDTO franchiseDTO)
         {
             try
             {

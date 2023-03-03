@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Mime;
 using WebAPI.Exceptions;
 using WebAPI.Models;
@@ -22,11 +23,13 @@ namespace WebAPI.Controllers
     {
         #region Constructor & Fields
         private readonly IMovieService _service;
+        private readonly MoviesDbContext _context;
         private readonly IMapper _mapper;
 
         // Sets the service and mapper for this controller via constructor.
-        public MoviesController(IMovieService service, IMapper mapper)
+        public MoviesController(IMovieService service, MoviesDbContext context, IMapper mapper)
         {
+            _context = context;
             _service = service;
             _mapper = mapper;
         }
@@ -103,17 +106,21 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, MovieUpdateDTO movieDTO)
         {
+            if (id != movieDTO.Id)
+            {
+                return BadRequest();
+            }
+
             try
             {
                 var movie = _mapper.Map<Movie>(movieDTO);
-                movie.Id = id;
                 await _service.UpdateMovie(movie);
             }
-            catch (KeyNotFoundException e)
+            catch (MovieNotFoundException ex)
             {
                 return NotFound(new ProblemDetails
                 {
-                    Detail = e.Message
+                    Detail = ex.Message
                 });
             }
 

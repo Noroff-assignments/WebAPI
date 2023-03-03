@@ -2,6 +2,6 @@
 {
     public class MovieCreateDTO
     {
-        public string Title { get; set; }
+        public int Title { get; set; }
     }
 }
