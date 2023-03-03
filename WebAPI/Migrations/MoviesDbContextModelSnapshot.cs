@@ -33,7 +33,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("CharacterMovie");
+                    b.ToTable("CharacterMovie", (string)null);
 
                     b.HasData(
                         new
@@ -202,7 +202,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
 
                     b.HasData(
                         new
@@ -316,7 +316,7 @@ namespace WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Franchises");
+                    b.ToTable("Franchises", (string)null);
 
                     b.HasData(
                         new
@@ -377,7 +377,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("FranchiseId");
 
-                    b.ToTable("Movies");
+                    b.ToTable("Movies", (string)null);
 
                     b.HasData(
                         new
