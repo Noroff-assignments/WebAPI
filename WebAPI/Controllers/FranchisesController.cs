@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Exceptions;
 using WebAPI.Models;
-using WebAPI.Models.DTOs;
 using WebAPI.Models.DTOs.Franchises;
+using WebAPI.Models.DTOs.Movies;
 using WebAPI.Services.FranchiseService;
 
 namespace WebAPI.Controllers
