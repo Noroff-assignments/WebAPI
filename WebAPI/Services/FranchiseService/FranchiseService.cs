@@ -6,13 +6,14 @@ namespace WebAPI.Services.FranchiseService
 {
     public class FranchiseService : IFranchiseService
     {
-
+        #region Constructor & Fields
         private readonly MoviesDbContext _context;
 
         public FranchiseService(MoviesDbContext context)
         {
             _context = context;
         }
+        #endregion
 
         /// <summary>
         /// The service of getting all the franchises in db.
@@ -117,10 +118,16 @@ namespace WebAPI.Services.FranchiseService
         /// <exception cref="FranchiseNotFoundException">When cant find franchise by the unique identifier.></exception>
         public async Task<Franchise> UpdateFranchise(Franchise franchise)
         {
-            var foundFranchise = await _context.Franchises.AnyAsync(x => x.Id == franchise.Id);
-            if (!foundFranchise) throw new FranchiseNotFoundException(franchise.Id);
+            var foundFranchise = await _context.Franchises.AnyAsync(f => f.Id == franchise.Id);
+            
+            if (!foundFranchise)
+            {
+                throw new FranchiseNotFoundException(franchise.Id);
+            }
+            
             _context.Entry(franchise).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+
             return franchise;
         }
         /// <summary>

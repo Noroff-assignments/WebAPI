@@ -6,6 +6,12 @@ namespace WebAPI.Profiles
 {
     public class CharacterProfile : Profile
     {
+        /// <summary>
+        /// Specifies how the AutoMapper should map Character objects.
+        /// Maps CharacterCreateDTO to a Character object
+        /// Maps Character object to CharacterReadDTO and defines a map for the Movies properties of Character object to a URL in the format: "api/v1/movies/{movie.Id}"
+        /// Maps CharacterUpdateDTO to a Character object.
+        /// </summary>
         public CharacterProfile()
         {
             CreateMap<CharacterCreateDTO, Character>();

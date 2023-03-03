@@ -6,6 +6,7 @@ namespace WebAPI.Models
 {
     public class MoviesDbContext : DbContext
     {
+        // Sets the tables for the database
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Character> Characters { get; set; }
         public DbSet<Franchise> Franchises { get; set; }
@@ -14,12 +15,15 @@ namespace WebAPI.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region Franchises
             modelBuilder.Entity<Franchise>().HasData(
                 new Franchise { Id = 1, Name = "DC Extended Universe", Description = "Superhero movies based on DC Comics characters." },
                 new Franchise { Id = 2, Name = "Jurassic Park", Description = "Adventure movies about cloned dinosaurs." },
                 new Franchise { Id = 3, Name = "Pirates of the Caribbean", Description = "Adventure movies about pirates." }
                 );
+            #endregion
 
+            #region Movies
             modelBuilder.Entity<Movie>().HasData(
                 new Movie { Id = 1, Title = "Man of Steel", ReleaseYear = 2013, Genre = "Action, Adventure, Fantasy", Director = "Zack Snyder", PosterURL = "https://xl.movieposterdb.com/13_05/2013/770828/xl_770828_b1a0c77c.jpg", TrailerURL = "https://www.youtube.com/watch?v=T6DJcgm3wNY", FranchiseId = 1 },
                 new Movie { Id = 2, Title = "Batman v Superman: Dawn of Justice", ReleaseYear = 2016, Genre = "Action, Adventure, Sci-Fi", Director = "Zack Snyder", PosterURL = "https://xl.movieposterdb.com/22_06/2016/2975590/xl_2975590_dc17b3fd.jpg", TrailerURL = "https://www.youtube.com/watch?v=0WWzgGyAH6Y", FranchiseId = 1 },
@@ -31,7 +35,9 @@ namespace WebAPI.Models
                 new Movie { Id = 8, Title = "Pirates of the Caribbean: Dead Man's Chest", ReleaseYear = 2006, Genre = "Action, Adventure, Fantasy", Director = "Gore Verbinski", PosterURL = "https://xl.movieposterdb.com/22_12/2006/857391/xl_pirates-of-the-caribbean-secrets-of-dead-mans-chest-movie-poster_b685ac38.jpg", TrailerURL = "https://www.youtube.com/watch?v=ozk0-RHXtFw", FranchiseId = 3 },
                 new Movie { Id = 9, Title = "Pirates of the Caribbean: At World's End", ReleaseYear = 2007, Genre = "Action, Adventure, Fantasy", Director = "Gore Verbinski", PosterURL = "https://xl.movieposterdb.com/14_06/2007/449088/xl_449088_1921c5f3.jpg", TrailerURL = "https://www.youtube.com/watch?v=HKSZtp_OGHY", FranchiseId = 3 }
                 );
+            #endregion
 
+            #region Characters
             modelBuilder.Entity<Character>().HasData(
                 new Character { Id = 1, FullName = "Clark Kent", Alias = "Superman", Gender = "Male", PictureURL = "https://www.example.com/superman.jpg" },
                 new Character { Id = 2, FullName = "Bruce Wayne", Alias = "Batman", Gender = "Male", PictureURL = "https://www.example.com/batman.jpg" },
@@ -46,7 +52,9 @@ namespace WebAPI.Models
                 new Character { Id = 11, FullName = "Hector Barbossa", Alias = "Barbossa", Gender = "Male", PictureURL = "https://www.example.com/barbossa.jpg" },
                 new Character { Id = 12, FullName = "Joshamee Gibbs", Alias = "Gibbs", Gender = "Male", PictureURL = "https://www.example.com/gibbs.jpg" }
                 );
+            #endregion
 
+            #region Character to movie relations
             modelBuilder.Entity<Character>()
                 .HasMany(cha => cha.Movies)
                 .WithMany(mov => mov.Characters)
@@ -88,6 +96,7 @@ namespace WebAPI.Models
                         new { CharacterId = 12, MovieId = 9 }
                         );
                 });
+            #endregion
         }
     }
 }

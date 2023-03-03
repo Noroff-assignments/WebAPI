@@ -11,6 +11,10 @@ using WebAPI.Services.FranchiseService;
 
 namespace WebAPI.Controllers
 {
+    // Annotations specifiying where the controller is located,
+    // that it should be controlled by API,
+    // that it creates and uses JSONs,
+    // and that it uses the defualt API conventions.
     [Route("api/v1/[controller]")]
     [ApiConventionType(typeof(DefaultApiConventions))]
     [Produces(MediaTypeNames.Application.Json)]
@@ -18,83 +22,57 @@ namespace WebAPI.Controllers
     [ApiController]
     public class FranchisesController : ControllerBase
     {
-        private readonly IFranchiseService _franchiseService;
+        #region Fields & Constructor
+        private readonly IFranchiseService _service;
         private readonly IMapper _mapper;
 
-        public FranchisesController(IFranchiseService franchiseService, IMapper mapper)
+        // Sets the service and mapper for this controller via constructor.
+        public FranchisesController(IFranchiseService service, IMapper mapper)
         {
-            _franchiseService = franchiseService;
+            _service = service;
             _mapper = mapper;
         }
-
+        #endregion
+        #region HTTP Gets
         /// <summary>
-        /// Get all franchies in db.
+        /// Gets all franchises from database.
         /// </summary>
         /// <returns>List of franchises.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FranchiseReadDTO>>> GetAllFranchises()
         {
-            return Ok(_mapper.Map<IEnumerable<FranchiseReadDTO>>(await _franchiseService.GetAllFranchises()));
+            try
+            { 
+                return Ok(_mapper.Map<IEnumerable<FranchiseReadDTO>>(await _service.GetAllFranchises()));
+            }
+            catch (FranchiseNotFoundException e)
+            {
+                return NotFound(new ProblemDetails
+                {
+                    Detail = e.Message
+                });
+            }
         }
-
         /// <summary>
-        /// Get one franchise based on identifier.
+        /// Gets one franchise by ID.
         /// </summary>
-        /// <param name="id">Unique identifer of a franchise.</param>
-        /// <returns>One spicific franchise based on idenfier.</returns>
+        /// <param name="id">Unique identifer for a franchise.</param>
+        /// <returns>One specific franchise based on idenfier.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<FranchiseReadDTO>> GetFranchiseById(int id)
         {
             try
             {
-                return Ok(_mapper.Map<FranchiseReadDTO>(await _franchiseService.GetFranchiseById(id)));
+                return Ok(_mapper.Map<FranchiseReadDTO>(await _service.GetFranchiseById(id)));
             }
-            catch (FranchiseNotFoundException ex)
+            catch (FranchiseNotFoundException e)
             {
                 return NotFound(new ProblemDetails
                 {
-                    Detail = ex.Message
+                    Detail = e.Message
                 });
             }
         }
-        /// <summary>
-        /// Create new franchise to db.
-        /// </summary>
-        /// <param name="createFranchiseDto">A franchise contain string Name and string Description.</param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<ActionResult<Franchise>> CreateFranchise(FranchiseCreateDTO createFranchiseDto)
-        {
-            try
-            {
-                var franchise = _mapper.Map<Franchise>(createFranchiseDto);
-                await _franchiseService.CreateFranchise(franchise);
-                return CreatedAtAction(nameof(GetFranchiseById), new { id = franchise.Id }, franchise);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        /// <summary>
-        /// Delete one franchise from db based on a identifier.
-        /// </summary>
-        /// <param name="id">An unique identifier of a franchise.</param>
-        /// <returns></returns>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFranchise(int id)
-        {
-            try
-            {
-                await _franchiseService.DeleteFranchise(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            return NoContent();
-        }
-
         /// <summary>
         /// Get all the movies for a given franchise.
         /// </summary>
@@ -105,7 +83,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                return Ok(_mapper.Map<IEnumerable<MovieReadDTO>>(await _franchiseService.GetAllFranchiseMovies(id)));
+                return Ok(_mapper.Map<IEnumerable<MovieReadDTO>>(await _service.GetAllFranchiseMovies(id)));
             }
             catch (Exception ex)
             {
@@ -122,16 +100,58 @@ namespace WebAPI.Controllers
         {
             try
             {
-                return Ok(_mapper.Map<IEnumerable<CharacterReadDTO>>(await _franchiseService.GetAllFranchiseCharacters(id)));
+                return Ok(_mapper.Map<IEnumerable<CharacterReadDTO>>(await _service.GetAllFranchiseCharacters(id)));
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
+        #endregion
+        #region HTTP Posts
         /// <summary>
-        /// Update an existing franchise in db.
+        /// Create a new franchise in database.
+        /// </summary>
+        /// <param name="createFranchiseDto">A franchise contains a string Name and a string Description.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult<Franchise>> CreateFranchise(FranchiseCreateDTO createFranchiseDto)
+        {
+            try
+            {
+                var franchise = _mapper.Map<Franchise>(createFranchiseDto);
+                await _service.CreateFranchise(franchise);
+                return CreatedAtAction(nameof(GetFranchiseById), new { id = franchise.Id }, franchise);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
+        #region HTTP Deletes
+        /// <summary>
+        /// Delete one franchise from database based on a identifier.
+        /// </summary>
+        /// <param name="id">An unique identifier of a franchise.</param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFranchise(int id)
+        {
+            try
+            {
+                await _service.DeleteFranchise(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            return NoContent();
+        }
+        #endregion
+        #region HTTP Puts
+        /// <summary>
+        /// Update an existing franchise in database.
         /// </summary>
         /// <param name="id">Unique identifier of a franchise.</param>
         /// <param name="franchiseDTO">An franchise info, Name and description.</param>
@@ -139,21 +159,17 @@ namespace WebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, FranchiseUpdateDTO franchiseDTO)
         {
-            if (id != franchiseDTO.Id)
-            {
-                return BadRequest();
-            }
-
             try
             {
                 var franchise = _mapper.Map<Franchise>(franchiseDTO);
-                await _franchiseService.UpdateFranchise(franchise);
+                franchise.Id = id;
+                await _service.UpdateFranchise(franchise);
             }
-            catch (FranchiseNotFoundException ex)
+            catch (FranchiseNotFoundException e)
             {
                 return NotFound(new ProblemDetails
                 {
-                    Detail = ex.Message
+                    Detail = e.Message
                 });
             }
 
@@ -170,7 +186,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await _franchiseService.UpdateFranchiseMovies(id, movies);
+                await _service.UpdateFranchiseMovies(id, movies);
             }
             catch (KeyNotFoundException)
             {
@@ -179,7 +195,6 @@ namespace WebAPI.Controllers
 
             return NoContent();
         }
-
-
+        #endregion
     }
 }

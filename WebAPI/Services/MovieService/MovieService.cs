@@ -7,13 +7,20 @@ namespace WebAPI.Services.MovieService
 {
     public class MovieService : IMovieService
     {
+        #region Constructor & Fields
         private readonly MoviesDbContext _context;
 
         public MovieService(MoviesDbContext context)
         {
             _context = context;
         }
+        #endregion
 
+        /// <summary>
+        /// Adds a movie to the database.
+        /// </summary>
+        /// <param name="movie">Movie object</param>
+        /// <returns>Movie object added to database via Task</returns>
         public async Task<Movie> AddMovie(Movie movie)
         {
             _context.Movies.Add(movie);
@@ -21,6 +28,12 @@ namespace WebAPI.Services.MovieService
             return movie;
         }
 
+        /// <summary>
+        /// Deletes a movie from the database by ID.
+        /// </summary>
+        /// <param name="id">Identifier of movie to delete</param>
+        /// <returns>Deleted movie via Task</returns>
+        /// <exception cref="MovieNotFoundException"></exception>
         public async Task DeleteMovie(int id)
         {
             Movie movie = await _context.Movies.FindAsync(id);
@@ -33,11 +46,16 @@ namespace WebAPI.Services.MovieService
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Gets all characters in a movie specified by ID.
+        /// </summary>
+        /// <param name="id">Identifier of movie to get characters from.</param>
+        /// <returns>Characters in movie</returns>
         public async Task<IEnumerable<Character>> GetAllMovieCharacters(int id)
         {
             try
             {
-                bool movieExists = await _context.Movies.AnyAsync(x => x.Id == id);
+                bool movieExists = await _context.Movies.AnyAsync(movie => movie.Id == id);
 
                 if (!movieExists)
                 {
@@ -49,31 +67,39 @@ namespace WebAPI.Services.MovieService
                 Console.WriteLine(e);
             }
 
-
             var movie = await _context.Movies.Include(movie => movie.Characters)
                         .Where(movie => movie.Id == id).FirstOrDefaultAsync();
 
             return movie.Characters;
         }
 
+        /// <summary>
+        /// Gets all movies from database.
+        /// </summary>
+        /// <returns>All movies in database</returns>
         public async Task<IEnumerable<Movie>> GetAllMovies()
         {
             try
             {
-                return await _context.Movies.Include(x => x.Characters).ToListAsync();
+                return await _context.Movies.Include(movie => movie.Characters).ToListAsync();
             }
             catch (Exception)
             {
 
                 throw;
             }
-
         }
 
+        /// <summary>
+        /// Gets a movie from database by ID.
+        /// </summary>
+        /// <param name="id">Identifier of movie to get</param>
+        /// <returns>Movie</returns>
+        /// <exception cref="MovieNotFoundException"></exception>
         public async Task<Movie> GetMovieById(int id)
         {
 
-            var movie = await _context.Movies.Include(x => x.Characters).FirstOrDefaultAsync(x => x.Id == id);
+            var movie = await _context.Movies.Include(movie => movie.Characters).FirstOrDefaultAsync(x => x.Id == id);
 
             if (movie == null)
             {
@@ -83,9 +109,16 @@ namespace WebAPI.Services.MovieService
             return movie;
         }
 
+        /// <summary>
+        /// Updates a movie.
+        /// </summary>
+        /// <param name="movie">Movie to be updated</param>
+        /// <returns>Updated movie by task</returns>
+        /// <exception cref="MovieNotFoundException"></exception>
         public async Task<Movie> UpdateMovie(Movie movie)
         {
-            var foundMovie = await _context.Movies.AnyAsync(x => x.Id == movie.Id);
+            var foundMovie = await _context.Movies.AnyAsync(m => m.Id == movie.Id);
+            
             if (!foundMovie)
             {
                 throw new MovieNotFoundException(movie.Id);
@@ -96,6 +129,14 @@ namespace WebAPI.Services.MovieService
             return movie;
         }
 
+        /// <summary>
+        /// Updates characters in a movie.
+        /// </summary>
+        /// <param name="id">Identifier of movie</param>
+        /// <param name="charactersId">List of IDs of characters to be added</param>
+        /// <returns>Updated movie via Task</returns>
+        /// <exception cref="MovieNotFoundException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public async Task UpdateMovieCharacters(int id, List<int> charactersId)
         {
             var foundMovie = await _context.Movies.AnyAsync(movie => movie.Id == id);
