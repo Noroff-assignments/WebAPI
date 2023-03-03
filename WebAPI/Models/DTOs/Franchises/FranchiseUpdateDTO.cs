@@ -1,4 +1,4 @@
-﻿namespace WebAPI.Models.DTOs
+﻿namespace WebAPI.Models.DTOs.Franchises
 {
     public class FranchiseUpdateDTO
     {

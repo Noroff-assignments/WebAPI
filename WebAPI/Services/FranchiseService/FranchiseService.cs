@@ -1,38 +1,85 @@
-﻿using WebAPI.Models;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Exceptions;
+using WebAPI.Models;
+using WebAPI.Models.DTOs;
+using WebAPI.Models.DTOs.Franchises;
 
 namespace WebAPI.Services.FranchiseService
 {
     public class FranchiseService : IFranchiseService
     {
-        public Task<Franchise> AddFranchise(Franchise franchise)
+
+        private readonly MoviesDbContext _context;
+
+        public FranchiseService(MoviesDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task DeleteFranchise(int id)
+
+        public async Task<IEnumerable<Franchise>> GetAllFranchises()
         {
-            throw new NotImplementedException();
+            return await _context.Franchises.ToListAsync();
         }
 
-        public Task<IEnumerable<Character>> GetAllFranchiseCharacters(int franchiseId)
+        public async Task<Franchise> GetFranchiseById(int id)
         {
-            throw new NotImplementedException();
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            return franchise;
         }
 
-        public Task<IEnumerable<Movie>> GetAllFranchiseMovies(int franchiseId)
+        public async Task<Franchise> CreateFranchise(Franchise franchise)
         {
-            throw new NotImplementedException();
+            if (franchise == null) throw new ArgumentNullException(nameof(franchise));
+            await _context.Franchises.AddAsync(franchise); 
+            await _context.SaveChangesAsync();
+            return franchise;
         }
 
-        public Task<IEnumerable<Franchise>> GetAllFranchises()
+
+
+        public async Task DeleteFranchise(int id)
         {
-            throw new NotImplementedException();
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+
+            _context.Franchises.Remove(franchise);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<Franchise> GetFranchiseById(int id)
+        public async Task<IEnumerable<Movie>> GetAllFranchiseMovies(int id)
+        {
+            var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            var movies =  await _context.Movies.Where(m => m.FranchiseId == id).ToListAsync();
+            return movies;
+        }
+
+        public async Task<IEnumerable<Character>> GetAllFranchiseCharacters(int id)
         {
             throw new NotImplementedException();
+            /*var franchise = await _context.Franchises.FindAsync(id);
+            if (franchise == null)
+            {
+                throw new FranchiseNotFoundException(id);
+            }
+            var movies = await _context.Movies.Where(m => m.FranchiseId == id).ToListAsync();
+            var character = await _context.Characters.Where(c => c.Id == movieid).ToListAsync();
+            return character;*/
         }
+
+
 
         public Task<Franchise> UpdateFranchise(Franchise franchise)
         {

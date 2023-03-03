@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Options;
 using WebAPI.Models;
-using WebAPI.Models.DTOs;
+using WebAPI.Models.DTOs.Franchises;
 
 namespace WebAPI.Profiles
 {
