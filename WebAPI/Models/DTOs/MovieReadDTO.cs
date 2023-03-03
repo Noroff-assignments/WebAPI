@@ -10,7 +10,7 @@
         public string PosterURL { get; set; }
         public string TrailerURL { get; set; }
 
-        public ICollection<Character>? Characters { get; set; }
+        public List<string>? Characters { get; set; }
         public int FranchiseId { get; set; }
     }
 }

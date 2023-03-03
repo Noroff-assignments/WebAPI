@@ -80,15 +80,24 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{id}/movies")]
-        public async Task<ActionResult<IEnumerable<MovieReadDTO>>> GetAllFranchiseMovies(int id)
+        public async Task<ActionResult<IEnumerable<Movie>>> GetAllFranchiseMovies(int id)
         {
             try
             {
-                return Ok(
-                        _mapper.Map<List<MovieReadDTO>>(
-                            await _franchiseService.GetAllFranchiseMovies(id)
-                        )
-                    );
+                return Ok(_mapper.Map<IEnumerable<MovieReadDTO>>(await _franchiseService.GetAllFranchiseMovies(id)));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}/movies/characters")]
+        public async Task<ActionResult<IEnumerable<Character>>> GetAllFranchiseCharacters(int id)
+        {
+            try
+            {
+                return Ok(_mapper.Map<IEnumerable<CharacterReadDTO>>(await _franchiseService.GetAllFranchiseCharacters(id)));
             }
             catch (Exception ex)
             {
