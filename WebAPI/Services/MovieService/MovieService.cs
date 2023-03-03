@@ -111,11 +111,11 @@ namespace WebAPI.Services.MovieService
           
             var characters = new List<Character>();
 
-            foreach (var Id in charactersId)
+            foreach (int Id in charactersId)
             {
-                var character = await _context.Characters.FindAsync(id);
+                var character = await _context.Characters.FindAsync(Id);
                 if (character == null)
-                    throw new KeyNotFoundException($"Couldn't find character with ID: {id}");
+                    throw new KeyNotFoundException($"Couldn't find character with ID: {Id}");
                 characters.Add(character);
             }
             movieToUpdateCharacters.Characters = characters;

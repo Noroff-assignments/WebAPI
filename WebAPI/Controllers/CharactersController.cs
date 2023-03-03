@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Exceptions;
 using WebAPI.Models;
-using WebAPI.Models.DTOs;
+using WebAPI.Models.DTOs.Characters;
 using WebAPI.Services.CharacterService;
 
 namespace WebAPI.Controllers
