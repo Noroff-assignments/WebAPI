@@ -4,6 +4,8 @@
 WebAPI is an solution on an assignment from the Accelerated Larning course in Fullstack .NET developer (Noroff). WebAPI is an ASP.Net application written in C# and utilize Entity Framework Core by code first. 
 ## Description
 
+![database diagram](https://user-images.githubusercontent.com/15190773/222738786-6d6305d2-f0fc-4d39-8376-fdea42e3fa3e.PNG)
+
 ## Running Project
 
 
